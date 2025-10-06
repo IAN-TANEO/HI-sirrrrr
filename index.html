@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Romantic Message for Sir Ryle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS Variables & Global Styles --- */
+        :root {
+            --rose-color: #e57373; /* Soft Red/Pink */
+            --cream-color: #fff9e6; /* Soft Creamy White */
+            --light-pink: #f8bbd0; /* Very Light Pink */
+            --dark-text: #5d4037; /* Brown/Dark Text */
+            --envelope-height: 250px;
+            --envelope-width: 380px;
+            --flower-height: 250px; /* Final stem height */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            user-select: none;
+            cursor: default;
+            position: relative;
+        }
+
+        /* Galaxy Background */
+        .galaxy-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #0a0a2e 0%, #000000 70%);
+            z-index: -1;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        .centered-container {
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- 1. GREETING AREA (Above Envelope) --- */
+        #greeting-area {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-in, transform 1s ease-in;
+            margin-bottom: 30px;
+            text-align: center;
+            position: absolute;
+            top: 0; /* Positioned relative to the container */
+            width: 100%;
+            z-index: 10;
+        }
+
+        #greeting-area.visible {
+            opacity: 1;
+            transform: translateY(-20px); /* Moves up slightly for effect */
+        }
+
+        .profile-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--rose-color);
+            box-shadow: 0 0 15px rgba(229, 115, 115, 0.5);
+            margin-bottom: 8px;
+        }
+
+        .greeting-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 0 0 10px rgba(229, 115, 115, 0.7);
+        }
+
+        /* --- 2. ENVELOPE BASE --- */
+        .envelope {
+            position: relative;
+            width: var(--envelope-width);
+            height: var(--envelope-height);
+            max-width: 90vw;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 255, 255, 0.1) inset;
+            transition: all 0.5s ease-out;
+            cursor: pointer;
+            z-index: 5;
+            border: 1px solid #444;
+        }
+
+        /* Subtle glowing effect for the closed, clickable state */
+        .envelope:not(.opened) {
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 10px var(--rose-color); }
+            100% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px var(--rose-color); }
+        }
+
+        /* Flap */
+        .top-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(135deg, #c2185b 0%, #e57373 100%);
+            border-radius: 12px 12px 0 0;
+            z-index: 2;
+            transform-origin: top;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            clip-path: polygon(0 0, 100% 0, 50% 100%); 
+            border: 1px solid #555;
+        }
+
+        .envelope.opened .top-flap {
+            transform: rotateX(180deg) translateY(100%); 
+            z-index: 0; /* Move behind the paper when open */
+        }
+
+        /* Envelope details */
+        .envelope-detail {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            top: 5%;
+            left: 5%;
+            border: 1px solid #ff4081;
+            border-radius: 4px;
+            opacity: 0.3;
+            z-index: 2;
+        }
+
+        /* Corner decorations */
+        .corner-decoration {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            z-index: 2;
+        }
+
+        .corner-tl {
+            top: 10px;
+            left: 10px;
+            border-top: 2px solid #ff4081;
+            border-left: 2px solid #ff4081;
+        }
+
+        .corner-tr {
+            top: 10px;
+            right: 10px;
+            border-top: 2px solid #ff4081;
+            border-right: 2px solid #ff4081;
+        }
+
+        .corner-bl {
+            bottom: 10px;
+            left: 10px;
+            border-bottom: 2px solid #ff4081;
+            border-left: 2px solid #ff4081;
+        }
+
+        .corner-br {
+            bottom: 10px;
+            right: 10px;
+            border-bottom: 2px solid #ff4081;
+            border-right: 2px solid #ff4081;
+        }
+
+        /* --- 3. FLOWER (Grows from center of envelope) --- */
+
+        .flower-container {
+            position: absolute;
+            bottom: 0; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 30px; /* Starting height inside envelope */
+            z-index: 4; /* Below letter but above envelope base */
+            overflow: hidden;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.5s;
+        }
+        
+        .envelope.opened .flower-container {
+            opacity: 1; /* Fade in flower container when envelope opens */
+        }
+
+        /* Stem Animation */
+        .stem-segment {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 0; /* Starts hidden */
+            background: linear-gradient(to top, #2d5f3f 0%, #4a7c59 100%);
+            border-radius: 3px;
+            transition: height 1s ease-out;
+        }
+
+        .flower-container.flower-grown .stem-segment {
+            height: var(--flower-height); /* Grows up */
+        }
+
+        /* Flower Head */
+        .flower-head {
+            position: absolute;
+            bottom: var(--flower-height); /* Positioned at the top of the final stem height */
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            width: 60px;
+            height: 60px;
+            opacity: 0;
+            transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1.2s, opacity 0.5s ease 1.2s; /* Bloom after stem grows */
+        }
+
+        .flower-container.flower-grown .flower-head {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* Petals (using the CSS rose drawing from previous iterations) */
+        .petal {
+            position: absolute;
+            width: 30px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--light-pink) 0%, var(--rose-color) 100%);
+            border-radius: 50% 50% 50% 0;
+            transform-origin: bottom left;
+            box-shadow: 0 0 10px rgba(229, 115, 115, 0.5);
+        }
+
+        .petal-1 { transform: rotate(0deg) translate(15px, 15px); }
+        .petal-2 { transform: rotate(72deg) translate(15px, 15px); }
+        .petal-3 { transform: rotate(144deg) translate(15px, 15px); }
+        .petal-4 { transform: rotate(216deg) translate(15px, 15px); }
+        .petal-5 { transform: rotate(288deg) translate(15px, 15px); }
+
+        .rose-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(circle, var(--rose-color) 0%, #c41c00 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(229, 115, 115, 0.7);
+        }
+
+
+        /* --- 4. LETTER PAPER (Slides Up and Unfolds) --- */
+
+        .letter-paper {
+            position: absolute;
+            top: var(--envelope-height); /* Starts hidden inside the envelope base */
+            left: 0;
+            width: 100%;
+            min-height: var(--envelope-height);
+            max-height: 0; /* Unfolded state max height */
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            
+            /* Initial folded/hidden state */
+            opacity: 0;
+            padding: 0 30px; /* Padding for content when unfolded */
+            overflow: hidden;
+            border: 1px solid #333;
+            
+            transition: 
+                transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.5s, /* Slide up */
+                max-height 1.2s ease-out 1.2s, /* Unfold/Expand (longer delay) */
+                opacity 0.1s linear 0.5s;
+            
+            z-index: 3;
+        }
+
+        .letter-paper.letter-unfolded {
+            /* Slide up by the height of the envelope */
+            transform: translateY(calc(-1 * var(--envelope-height))); 
+            max-height: 600px; /* Final scrollable height */
+            opacity: 1;
+        }
+        
+        .letter-content-scroll {
+            /* Scrollable container inside the expanded paper */
+            height: 100%;
+            padding-bottom: 40px;
+            overflow-y: auto;
+            max-height: 500px;
+            
+            /* Custom Scrollbar Styling */
+            scrollbar-width: thin;
+            scrollbar-color: var(--rose-color) #1a1a1a;
+        }
+
+        .letter-content-scroll::-webkit-scrollbar { width: 6px; }
+        .letter-content-scroll::-webkit-scrollbar-track { background: #1a1a1a; border-radius: 10px; }
+        .letter-content-scroll::-webkit-scrollbar-thumb { background: var(--rose-color); border-radius: 10px; }
+
+        .letter-header {
+            text-align: center;
+            padding: 20px 0 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed var(--light-pink);
+        }
+
+        .letter-message {
+            font-family: 'Great Vibes', cursive;
+            font-size: 1.8rem;
+            line-height: 1.5;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(229, 115, 115, 0.5);
+        }
+        
+        .message-item {
+            background: rgba(255, 64, 129, 0.1);
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--rose-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .message-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(229, 115, 115, 0.2);
+        }
+
+        .message-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: #eee;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+
+        .message-author {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--rose-color);
+            text-align: right;
+        }
+
+        /* Floating particles */
+        .floating-particle {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0;
+            font-size: 24px;
+            animation: float-up 4s ease-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #ff4081;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 480px) {
+            :root {
+                --envelope-width: 90vw;
+                --envelope-height: 200px;
+                --flower-height: 200px;
+            }
+            .greeting-text { font-size: 2rem; }
+            .letter-paper.letter-unfolded { max-height: 500px; }
+            .letter-message { font-size: 1.5rem; }
+            .letter-content-scroll { max-height: 400px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Galaxy Background -->
+    <div class="galaxy-bg"></div>
+    <div class="stars" id="stars"></div>
+
+    <div class="centered-container" id="container">
+        
+        <!-- GREETING MESSAGE (Fades in first) -->
+        <div id="greeting-area">
+            <img 
+                src="Sir Ryle.jpg" 
+                alt="Sir Ryle's Profile Photo" 
+                class="profile-photo"
+                onerror="this.onerror=null; this.src='Sir Ryle.jpg';"
+            >
+            <h1 class="greeting-text"></h1>
+        </div>
+
+        <!-- 3. FLOWER (Grows) -->
+        <div class="flower-container" id="flowerContainer">
+            <div class="stem-segment" id="stemSegment"></div>
+            <div class="flower-head">
+                <div class="petal petal-1"></div>
+                <div class="petal petal-2"></div>
+                <div class="petal petal-3"></div>
+                <div class="petal petal-4"></div>
+                <div class="petal petal-5"></div>
+                <div class="rose-center"></div>
+            </div>
+        </div>
+
+        <!-- 1. ENVELOPE (Clickable) -->
+        <div class="envelope" id="envelope">
+            <!-- Envelope details -->
+            <div class="envelope-detail"></div>
+            
+            <!-- Corner decorations -->
+            <div class="corner-decoration corner-tl"></div>
+            <div class="corner-decoration corner-tr"></div>
+            <div class="corner-decoration corner-bl"></div>
+            <div class="corner-decoration corner-br"></div>
+            
+            <div class="top-flap"></div>
+            
+            <!-- 5. LETTER PAPER (Slides and unfolds from this position) -->
+            <div class="letter-paper" id="letterPaper">
+                <button class="close-btn" id="closeBtn">×</button>
+                <div class="letter-content-scroll">
+                    <!-- Letter Top -->
+                    <div class="letter-header">
+                        <img 
+                            src="Sir Ryle.jpg" 
+                            alt="Sir Ryle's Profile Photo" 
+                            class="profile-photo mx-auto"
+                            style="width: 60px; height: 60px;"
+                            onerror="this.onerror=null; this.src='Sir Ryle.jpg';"
+                        >
+                        <p class="letter-message text-center pt-2">Hi Sirrr...Please read with care po hehe..From you bery gratefull students</p>
+                    </div>
+
+                    <!-- 6. HEARTFELT MESSAGES -->
+                    <div id="messages">
+                        <div class="message-item">
+                            <p class="message-text">"Hi Sir Ryle 🙂
+
+Salamat kaayo sa imong pagkabuotan ug considerate sa mga students nimo😞 kabalo jud ka nga naglisud mig himo sa website perooo acckkk GOD WILL PROVIDE HUHUHUHU😭 Mabuhay ka hanggat sa gusto mo.
+
+HAPPY TEACHER'S DAY SIRRR🥳🧑‍💻
+
+COUTTT🫡</p>
+                            <p class="message-author">— MITS</p>
+                        </div>
+                        <div class="message-item">
+                            <p class="message-text">"hi sir! "</p>
+                            <p class="message-author">— Matty</p>
+                        </div>
+                        <div class="message-item">
+                            <p class="message-text">"Dear Sir ryle pa hinge nang ppt sa DSA 👈🥺👉"</p>
+                            <p class="message-author">— Tansan</p>
+                        </div>
+                        <div class="message-item">
+                            <p class="message-text">"OUR BELOVED EVER SO BUOTAN SIR RYLE 🤸🏻‍♂️🫂TENCHU SO MUCH SO AMAZING TEACHING SKILLZ sana pumaldo kami sayo🫰🏻"</p>
+                            <p class="message-author">— -acezu0</p>
+                        </div>
+                        <div class="message-item">
+                            <p class="message-text">"Ma'am and sir, thank you sa lahat sa maraming salamat 🥺🤝"</p>
+                            <p class="message-author">— Seira Erasim</p>
+                        </div>
+                        <div class="message-item">
+                            <p class="message-text">"Happy teacher Days!! 😄 😛😎🎊 sir"</p>
+                            <p class="message-author">— Lorenzo</p>
+                        </div>
+                        <div class="message-item">
+                            <p class="message-text">"Hi sir ryle....................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ....................................................................
+                                ...................................................................,
+                                thank you sa pag turo sa amin, sa habang pasensya pag di namin na gegets hahaha, we know you are trying your best to teach it, and sa pagkabuotan, and sa pagiging kababayan na taga-aleosan!!!! itaas ang bandera!!! pero sa totoo, kidding aside, thank you po!"</p>
+                            <p class="message-author">— Matty</p>
+                        </div>
+                          <div class="message-item">
+                            <p class="message-text">"HIII SIRRRRR...... Jas wanna say Thank you sa tanan sirr, I mean sa tanan tanan sir, lamatss gyudddd kaayo sir sa pag tudlo kag pag intindi sa amoa biskan wa mi mga buot hahahahaha.............. HAPI TETSIRS DAY SIRRRRR 🥺😎🎊 "</p>
+                            <p class="message-author">— TANS YAN</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+        const greetingArea = document.getElementById('greeting-area');
+        const flowerContainer = document.getElementById('flowerContainer');
+        const letterPaper = document.getElementById('letterPaper');
+        const closeBtn = document.getElementById('closeBtn');
+        const stars = document.getElementById('stars');
+        
+        let isOpened = false;
+
+        // Create background stars
+        function createStars() {
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random position and size
+                const size = Math.random() * 3;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                
+                // Random animation delay
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                stars.appendChild(star);
+            }
+        }
+
+        function handleClick() {
+            if (isOpened) return;
+            isOpened = true;
+            envelope.style.cursor = 'default';
+            
+            // --- Step 1 & 2: Open Flap & Fade in Greeting ---
+            envelope.classList.add('opened');
+            greetingArea.classList.add('visible');
+
+            // --- Step 3: Flower Animation (after flap opens) ---
+            // The flap animation takes 0.8s
+            setTimeout(() => {
+                flowerContainer.classList.add('flower-grown');
+            }, 500); // Start flower growth after 0.5s
+
+            // --- Step 4 & 5: Letter Slide Up and Unfold (after flower grows) ---
+            // Flower stem grows for 1s. Flower blooms for 1s (total 2s).
+            // We wait 2.5s from the start of the click to unfold the letter.
+            setTimeout(() => {
+                letterPaper.classList.add('letter-unfolded');
+            }, 2500); 
+
+            // Create floating particles
+            createParticles();
+        }
+
+        function closeEnvelope() {
+            envelope.classList.remove('opened');
+            greetingArea.classList.remove('visible');
+            flowerContainer.classList.remove('flower-grown');
+            letterPaper.classList.remove('letter-unfolded');
+            isOpened = false;
+            envelope.style.cursor = 'pointer';
+        }
+
+        envelope.addEventListener('click', handleClick);
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeEnvelope();
+        });
+
+        // Romantic particles
+        const ROMANTIC_PARTICLES = ['❤️', '💖', '✨', '🌟', '🌹', '💫'];
+
+        // Function for the particle burst when the envelope is opened
+        function createParticles() {
+            const rect = envelope.getBoundingClientRect();
+            
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'floating-particle';
+                    particle.textContent = ROMANTIC_PARTICLES[Math.floor(Math.random() * ROMANTIC_PARTICLES.length)];
+                    
+                    // Start particles from the seal area
+                    particle.style.left = (rect.left + (rect.width / 2) + (Math.random() * 100 - 50)) + 'px';
+                    particle.style.top = (rect.top + (rect.height / 2)) + 'px';
+                    
+                    document.body.appendChild(particle);
+                    
+                    setTimeout(() => particle.remove(), 4000);
+                }, i * 75);
+            }
+        }
+
+        // Initialize
+        createStars();
+    </script>
+</body>
+</html>
